@@ -31,5 +31,7 @@ alias l='ls -lah'
 alias ll='ls -lh'
 alias la='ls -lAh'
 
+
 alias afind='ack-grep -il'
 
+alias ez='atom ~/.zshrc'

@@ -39,3 +39,6 @@ elif  [[ "$OSTYPE" = darwin* ]]; then
 fi
 
 alias stt='st .'
+alias edit='st .'
+alias e='st ./$1'
+alias ee='st'
