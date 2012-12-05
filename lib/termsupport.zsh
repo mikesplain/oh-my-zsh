@@ -8,7 +8,9 @@ function title {
   fi
   if [[ "$TERM" == screen* ]]; then
     print -Pn "\ek$1:q\e\\" #set screen hardstatus, usually truncated at 20 chars
-  elif [[ "$TERM" == xterm* ]] || [[ $TERM == rxvt* ]] || [[ $TERM == ansi ]] || [[ "$TERM_PROGRAM" == "iTerm.app" ]]; then
+  elif [[ "$TERM_PROGRAM" == "Apple_Terminal" ]]; then
+    print -Pn "\e]1;$1:q\a" #set icon (=tab) name (will override window name on broken terminal)
+  elif [[ "$TERM" == xterm* ]] || [[ $TERM == rxvt* ]] || [[ "$TERM_PROGRAM" == "iTerm.app" ]]; then
     print -Pn "\e]2;$2:q\a" #set window name
     print -Pn "\e]1;$1:q\a" #set icon (=tab) name (will override window name on broken terminal)
   fi
@@ -28,11 +30,10 @@ function omz_termsupport_preexec {
   setopt extended_glob
 
   # cmd name only, or if this is sudo or ssh, the next cmd
-  local CMD=${1[(wr)^(*=*|sudo|ssh|rake|-*)]:gs/%/%%}
-  local LINE="${2:gs/%/%%}"
-
-  title '$CMD' '%100>...>$LINE%<<'
+  local CMD=${1[(wr)^(*=*|sudo|ssh|rake|-*)]} #cmd name only, or if this is sudo or ssh, the next cmd
+  title "$CMD" "%100>...>${2:gs/%/%%}%<<"
 }
 
-precmd_functions+=(omz_termsupport_precmd)
-preexec_functions+=(omz_termsupport_preexec)
+autoload -U add-zsh-hook
+add-zsh-hook precmd  omz_termsupport_precmd
+add-zsh-hook preexec omz_termsupport_preexec

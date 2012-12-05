@@ -3,13 +3,18 @@
 function zle-keymap-select zle-line-init zle-line-finish {
   # The terminal must be in application mode when ZLE is active for $terminfo
   # values to be valid.
-  if (( ${+terminfo[smkx]} )); then
-    printf '%s' ${terminfo[smkx]}
+  if (( $+terminfo[smkx] && $+terminfo[rmkx] )); then
+    case "$0" in
+      (zle-line-init)
+        # Enable terminal application mode.
+        echoti smkx
+      ;;
+      (zle-line-finish)
+        # Disable terminal application mode.
+        echoti rmkx
+      ;;
+    esac
   fi
-  if (( ${+terminfo[rmkx]} )); then
-    printf '%s' ${terminfo[rmkx]}
-  fi
-
   zle reset-prompt
   zle -R
 }
@@ -17,14 +22,8 @@ function zle-keymap-select zle-line-init zle-line-finish {
 zle -N zle-line-init
 zle -N zle-line-finish
 zle -N zle-keymap-select
-zle -N edit-command-line
-
 
 bindkey -v
-
-# allow v to edit the command line (standard behaviour)
-autoload -Uz edit-command-line
-bindkey -M vicmd 'v' edit-command-line
 
 # if mode indicator wasn't setup by theme, define default
 if [[ "$MODE_INDICATOR" == "" ]]; then

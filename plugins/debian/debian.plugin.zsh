@@ -1,28 +1,27 @@
 # Authors:
 # https://github.com/AlexBio
 # https://github.com/dbb
-# https://github.com/Mappleconfusers
 #
 # Debian-related zsh aliases and functions for zsh
 
 # Use aptitude if installed, or apt-get if not.
 # You can just set apt_pref='apt-get' to override it.
-if [[ -e $( which -p aptitude 2>&1 ) ]]; then
+if [[ -e $( which aptitude 2>&1 ) ]]; then
     apt_pref='aptitude'
 else
     apt_pref='apt-get'
 fi
 
 # Use sudo by default if it's installed
-if [[ -e $( which -p sudo 2>&1 ) ]]; then
+if [[ -e $( which sudo 2>&1 ) ]]; then
     use_sudo=1
 fi
 
 # Aliases ###################################################################
 # These are for more obscure uses of apt-get and aptitude that aren't covered
 # below.
-alias age='apt-get'
-alias api='aptitude'
+alias ag='apt-get'
+alias ap='aptitude'
 
 # Some self-explanatory aliases
 alias acs="apt-cache search"
@@ -57,7 +56,7 @@ if [[ $use_sudo -eq 1 ]]; then
     alias ar='sudo $apt_pref remove'
 
     # apt-get only
-    alias ads='sudo apt-get dselect-upgrade'
+    alias ads='sudo $apt_pref dselect-upgrade'
 
     # Install all .deb files in the current directory.
     # Warning: you will need to put the glob in single quotes if you use:
@@ -110,38 +109,6 @@ else
         ?not(~n`uname -r`))'\'' root'
 fi
 
-# Completion ################################################################
-
-#
-# Registers a compdef for $1 that calls $apt_pref with the commands $2
-# To do that it creates a new completion function called _apt_pref_$2
-#
-apt_pref_compdef() {
-    local f fb
-    f="_apt_pref_${2}"
-
-    eval "function ${f}() {
-        shift words; 
-	service=\"\$apt_pref\"; 
-	words=(\"\$apt_pref\" '$2' \$words); 
-	((CURRENT++))
-	test \"\${apt_pref}\" = 'aptitude' && _aptitude || _apt
-    }"
-
-    compdef "$f" "$1"
-}
-
-apt_pref_compdef aac "autoclean"
-apt_pref_compdef abd "build-dep"
-apt_pref_compdef ac  "clean"
-apt_pref_compdef ad  "update"
-apt_pref_compdef afu "update"
-apt_pref_compdef ag  "upgrade"
-apt_pref_compdef ai  "install"
-apt_pref_compdef ail "install"
-apt_pref_compdef ap  "purge"
-apt_pref_compdef ar  "remove"
-apt_pref_compdef ads "dselect-upgrade"
 
 # Misc. #####################################################################
 # print all installed packages
